@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "misa-ai-paper"
+version = "0.1.0"
+description = "Misa's AI Paper Processing Project — 本地 AI 写作信号分析、风格改写与隐形标记扫描（零依赖）"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Misa" }]
+keywords = ["ai-detection", "watermark", "c2pa", "writing", "text-analysis"]
+dependencies = []
+
+[project.scripts]
+misa-paper = "misa.cli:main"
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+
+[tool.setuptools]
+packages = ["misa", "misa.analysis", "misa.transform", "misa.watermark", "misa.web"]
+
+[tool.setuptools.package-data]
+"misa.web" = ["static/*"]

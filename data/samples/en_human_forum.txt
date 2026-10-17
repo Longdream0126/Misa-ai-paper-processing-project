@@ -1,0 +1,9 @@
+honestly the new update broke everything. my presets are gone?? i had like 40 of them. spent an hour remapping and now the undo is laggy too.
+
+looked at the forum, seems like it's not just me. someone said it's a caching thing and you have to delete the config folder manually. tried it. did not help.
+
+also why does the export take twice as long now. render of the same 30s clip used to be ~9 min, now it's 18. nothing changed on my end. same machine, same drive, same project. did they add some "telemetry" that phones home every few seconds? feels like it.
+
+support ticket is in. auto reply says 3-5 business days lol. great.
+
+if anyone found a workaround please post it. rolling back to the old version for now, i'd rather miss the new "AI denoise" than lose another evening to this.

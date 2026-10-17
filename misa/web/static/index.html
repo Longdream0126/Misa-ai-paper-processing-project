@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Misa's AI Paper Processing Project · v0.1</title>
+<meta name="description" content="Misa's AI Paper Processing Project — local AI-writing signal analysis, style rewriting and invisible-mark scanning">
+<meta name="author" content="Misa">
+<link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="16" r="13" fill="none" stroke="currentColor" stroke-width="2.2" opacity=".35"/>
+        <path d="M16 3a13 13 0 0 1 11.3 6.6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+        <circle cx="16" cy="16" r="4.2" fill="currentColor"/>
+      </svg>
+      <div class="brand-text">
+        <h1>Misa's AI Paper</h1>
+        <p><span data-i18n="app.tagline_short">AI-writing signals</span> · <span class="ver">v0.1</span></p>
+      </div>
+    </div>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab is-active" data-tab="analyze" role="tab" data-i18n="tab.analyze">Analyze</button>
+      <button class="tab" data-tab="humanize" role="tab" data-i18n="tab.humanize">Rewrite</button>
+      <button class="tab" data-tab="marks" role="tab" data-i18n="tab.marks">Invisible marks</button>
+      <button class="tab" data-tab="watermark" role="tab" data-i18n="tab.watermark">Watermark</button>
+    </nav>
+
+    <label class="lang-picker" title="Language / 语言 / 言語">
+      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true" fill="none"
+           stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+        <circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 2.5 15.4 0 18M12 3c-2.5 2.6-2.5 15.4 0 18"/>
+      </svg>
+      <select id="lang-select" aria-label="Language"></select>
+    </label>
+
+    <div class="local-badge" title="All processing stays on this machine">
+      <span class="dot"></span><span data-i18n="local.badge">Local</span>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ================= analyze ================= -->
+    <section class="panel is-active" id="panel-analyze">
+      <div class="col col-editor">
+        <div class="pane">
+          <div class="pane-head">
+            <span class="pane-title" data-i18n="analyze.pane">Text to check</span>
+            <select id="sample-select" class="select" aria-label="Samples">
+              <option value="" data-i18n="analyze.sample">Load a sample…</option>
+            </select>
+            <span class="grow"></span>
+            <span class="counter" id="counter">0</span>
+          </div>
+          <textarea id="input" spellcheck="false" data-i18n-ph="analyze.placeholder"
+            placeholder="Paste the text you want to check…"></textarea>
+          <div class="pane-foot">
+            <button class="btn primary" id="btn-analyze">
+              <span class="spinner"></span><span class="label" data-i18n="analyze.run">Analyze</span>
+            </button>
+            <button class="btn ghost" id="btn-clear" data-i18n="analyze.clear">Clear</button>
+            <span class="hint" data-i18n="analyze.hint">Ctrl + Enter</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col col-result" id="analyze-result">
+        <div class="placeholder">
+          <div class="placeholder-icon">◔</div>
+          <p data-i18n="analyze.empty">Nothing yet. Paste some text on the left, then hit Analyze.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= humanize ================= -->
+    <section class="panel" id="panel-humanize">
+      <div class="col col-editor">
+        <div class="pane">
+          <div class="pane-head">
+            <span class="pane-title" data-i18n="humanize.pane">Source text</span>
+            <button class="btn ghost mini" id="btn-fill-humanize" data-i18n="humanize.fill">Use the analyzer text</button>
+            <span class="grow"></span>
+            <span class="counter" id="h-counter">0</span>
+          </div>
+          <textarea id="h-input" spellcheck="false" data-i18n-ph="humanize.placeholder"
+            placeholder="Paste the text you want to make sound more natural…"></textarea>
+          <div class="pane-foot wrap">
+            <div class="segmented" id="h-level" role="group">
+              <button data-level="light" data-i18n="humanize.level.light">Light</button>
+              <button data-level="standard" class="is-active" data-i18n="humanize.level.standard">Standard</button>
+              <button data-level="strong" data-i18n="humanize.level.strong">Strong</button>
+            </div>
+            <label class="check"><input type="checkbox" id="h-contractions" checked>
+              <span data-i18n="humanize.contractions">Add contractions</span></label>
+            <label class="check"><input type="checkbox" id="h-typography">
+              <span data-i18n="humanize.typography">Full-width punctuation</span></label>
+            <span class="grow"></span>
+            <button class="btn primary" id="btn-humanize">
+              <span class="spinner"></span><span class="label" data-i18n="humanize.run">Rewrite &amp; compare</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col col-result" id="humanize-result">
+        <div class="placeholder">
+          <div class="placeholder-icon">✎</div>
+          <p data-i18n="humanize.empty">Rewriting is deterministic: it strips clichés, restores verbs, adds contractions and splits long sentences.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= marks ================= -->
+    <section class="panel" id="panel-marks">
+      <div class="col col-editor">
+        <div class="pane">
+          <div class="pane-head">
+            <span class="pane-title" data-i18n="marks.text_pane">Text · invisible characters</span>
+            <button class="btn ghost mini" id="btn-fill-marks" data-i18n="humanize.fill">Use the analyzer text</button>
+            <span class="grow"></span>
+            <span class="counter" id="m-counter">0</span>
+          </div>
+          <textarea id="m-input" spellcheck="false" data-i18n-ph="marks.placeholder"
+            placeholder="Paste text copied from a web page, PDF or Word…"></textarea>
+          <div class="pane-foot">
+            <button class="btn primary" id="btn-scan-text">
+              <span class="spinner"></span><span class="label" data-i18n="marks.scan">Scan invisible characters</span>
+            </button>
+            <button class="btn ghost" id="btn-clean-text" data-i18n="marks.clean">Clean &amp; copy</button>
+          </div>
+        </div>
+
+        <div class="pane pane-drop" id="drop-zone">
+          <div class="pane-head">
+            <span class="pane-title" data-i18n="marks.file_pane">File · metadata / C2PA</span>
+            <span class="grow"></span>
+            <span class="counter">PNG · JPEG · PDF · DOCX · XLSX · PPTX</span>
+          </div>
+          <div class="drop-inner">
+            <p><span data-i18n="marks.drop">Drop a file here, or</span></p>
+            <label class="btn ghost file-label">
+              <span data-i18n="marks.choose">Choose file</span>
+              <input type="file" id="file-input" hidden>
+            </label>
+            <p class="tiny" data-i18n="marks.file_hint">Read-only analysis.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col col-result" id="marks-result">
+        <div class="placeholder">
+          <div class="placeholder-icon">◇</div>
+          <p data-i18n="inv.verdict.none">No character-level hidden marks.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= watermark ================= -->
+    <section class="panel" id="panel-watermark">
+      <div class="col col-result span-all">
+        <div class="panel-intro">
+          <h2 data-i18n="wm.title">How statistical watermarks work</h2>
+          <p data-i18n="wm.intro">At generation time a key splits the vocabulary into a green list…</p>
+          <div class="wm-controls">
+            <label><span data-i18n="wm.key">Key</span>
+              <input id="wm-key" class="input" value="misa-demo" spellcheck="false"></label>
+            <label><span data-i18n="wm.length">Length</span>
+              <input id="wm-length" class="input narrow" type="number" value="120" min="30" max="400"></label>
+            <button class="btn primary" id="btn-watermark">
+              <span class="spinner"></span><span class="label" data-i18n="wm.run">Run the demo</span>
+            </button>
+          </div>
+        </div>
+        <div id="wm-out" class="wm-out"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <span class="made-by" id="foot-made">Made by Misa · v0.1</span>
+    <span class="sep">·</span>
+    <span data-i18n="app.footer_local">Zero dependencies</span>
+    <span class="sep">·</span>
+    <span data-i18n="app.footer_caveat">The score is a heuristic statistic.</span>
+  </footer>
+</div>
+<script src="/static/app.js"></script>
+</body>
+</html>
